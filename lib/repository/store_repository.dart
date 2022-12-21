@@ -34,6 +34,7 @@ class StoreRepository {
             element.remainStat == "plenty" ||
             element.remainStat == "some" ||
             element.remainStat == "few")
-        .toList();
+        .toList()
+      ..sort(((a, b) => b.km!.compareTo(a.km!)));
   }
 }
