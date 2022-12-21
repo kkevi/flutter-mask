@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_mask/model/store.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class RemainStatListTile extends StatelessWidget {
   final Store store;
@@ -8,7 +9,18 @@ class RemainStatListTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return _buildRemainStatWidget(store);
+    return ListTile(
+      title: Text(store.name ?? ""),
+      subtitle: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        Text(store.addr ?? ""),
+        Text('${store.km}km'),
+      ]),
+      trailing: _buildRemainStatWidget(store),
+      onTap: () {
+        _launchUrl(store.lat!.toDouble(), store.lng!.toDouble());
+        print("tap!");
+      },
+    );
   }
 
   Widget _buildRemainStatWidget(Store store) {
@@ -52,5 +64,13 @@ class RemainStatListTile extends StatelessWidget {
         )
       ],
     );
+  }
+
+  Future<void> _launchUrl(double lat, double lng) async {
+    final Uri _url =
+        Uri.parse('https://google.com/maps/search/?api=1&query=$lat,$lng ');
+    if (!await launchUrl(_url)) {
+      throw 'Could not launch $_url';
+    }
   }
 }

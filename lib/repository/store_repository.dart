@@ -1,9 +1,12 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:latlong/latlong.dart';
 
 import '../model/store.dart';
 
 class StoreRepository {
+  final distance = Distance();
+
   Future<List<Store>> fetch(double lat, double lng) async {
     // 함수 바깥에서 선언된 stores가 함수 내로 들어오면서 매번 새로 stores가 생성됨. 따라서 stores를 매번 clear() 해줄 필요도 없음.
     final stores = <Store>[];
@@ -16,7 +19,14 @@ class StoreRepository {
     final jsonStores = jsonResult["stores"];
 
     jsonStores.forEach((e) {
-      stores.add(Store.fromJson(e));
+      final store = Store.fromJson(e);
+      final km = distance.as(
+          LengthUnit.Kilometer,
+          LatLng(store.lat!.toDouble(), store.lng!.toDouble()),
+          LatLng(lat, lng));
+      store.km = km;
+
+      stores.add(store);
     });
 
     return stores
